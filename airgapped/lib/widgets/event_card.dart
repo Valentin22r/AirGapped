@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'package:flutter/services.dart';
 import '../models/event.dart';
 import '../services/storage_service.dart';
 
@@ -16,6 +16,8 @@ class EventCard extends StatefulWidget {
 class _EventCardState extends State<EventCard> {
 
   bool favorite = false;
+
+  static const platform = MethodChannel('airgapped/launcher');
 
   @override
   void initState() {
@@ -49,8 +51,13 @@ class _EventCardState extends State<EventCard> {
     await StorageService.saveFavorites(favs);
   }
 
-  void open(String url) {
-    Process.run('xdg-open', [url]);
+  Future<void> open(String url) async {
+
+    try {
+      await platform.invokeMethod("open", {"url": url});
+    } catch (e) {
+      debugPrint("Cannot open $url");
+    }
   }
 
   @override
@@ -134,7 +141,7 @@ class _EventCardState extends State<EventCard> {
                   IconButton(
                     icon: const Icon(Icons.map),
                     onPressed: () => open(
-                      "https://www.google.com/maps/search/${event.location}"
+                      "geo:0,0?q=${event.location}"
                     ),
                   ),
               ],
