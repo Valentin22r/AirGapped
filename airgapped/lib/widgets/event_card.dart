@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'dart:io';
+import '../models/event.dart';
+import '../services/storage_service.dart';
+
+class EventCard extends StatefulWidget {
+
+  final Event event;
+
+  const EventCard({super.key, required this.event});
+
+  @override
+  State<EventCard> createState() => _EventCardState();
+}
+
+class _EventCardState extends State<EventCard> {
+
+  bool favorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadFavorite();
+  }
+
+  void loadFavorite() async {
+
+    final favs = await StorageService.loadFavorites();
+
+    setState(() {
+      favorite = favs.contains(widget.event.id);
+    });
+  }
+
+  void toggleFavorite() async {
+
+    var favs = await StorageService.loadFavorites();
+
+    setState(() {
+      favorite = !favorite;
+    });
+
+    if (favorite) {
+      favs.add(widget.event.id);
+    } else {
+      favs.remove(widget.event.id);
+    }
+
+    await StorageService.saveFavorites(favs);
+  }
+
+  void open(String url) {
+    Process.run('xdg-open', [url]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final event = widget.event;
+
+    return Card(
+      margin: const EdgeInsets.all(10),
+
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: [
+
+            Row(
+              children: [
+
+                Image.asset(
+                  'assets/logos/${event.logo}',
+                  width: 50,
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Text(
+                    event.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                IconButton(
+                  icon: Icon(
+                    favorite ? Icons.star : Icons.star_border,
+                  ),
+                  onPressed: toggleFavorite,
+                )
+              ],
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(event.description),
+
+            const SizedBox(height: 10),
+
+            Text("Date: ${event.date}"),
+            Text("Location: ${event.location}"),
+
+            const SizedBox(height: 10),
+
+            Row(
+              children: [
+
+                if (event.phone.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.phone),
+                    onPressed: () => open("tel:${event.phone}"),
+                  ),
+
+                if (event.email.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.email),
+                    onPressed: () => open("mailto:${event.email}"),
+                  ),
+
+                if (event.website.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.language),
+                    onPressed: () => open(event.website),
+                  ),
+
+                if (event.location.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.map),
+                    onPressed: () => open(
+                      "https://www.google.com/maps/search/${event.location}"
+                    ),
+                  ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

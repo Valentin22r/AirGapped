@@ -1,0 +1,13 @@
+[
+  {
+    "id": "1",
+    "title": "Cyber Security Conference",
+    "description": "Conference about cybersecurity awareness.",
+    "date": "2025-10-10",
+    "location": "Paris",
+    "phone": "+33123456789",
+    "email": "contact@cyberconf.fr",
+    "website": "https://cyberconf.fr",
+    "logo": "event1.png"
+  }
+]
