@@ -9,5 +9,104 @@
     "email": "contact@cyberconf.fr",
     "website": "https://cyberconf.fr",
     "logo": "event.jpeg"
+  },
+  {
+    "id": "2",
+    "title": "AI & Machine Learning Summit",
+    "description": "Exploring the latest trends in AI and ML.",
+    "date": "2025-11-05",
+    "location": "London",
+    "phone": "+442012345678",
+    "email": "info@aimlsummit.co.uk",
+    "website": "https://aimlsummit.co.uk",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "3",
+    "title": "Tech Startup Expo",
+    "description": "Showcase of the hottest tech startups in Europe.",
+    "date": "2025-12-12",
+    "location": "Berlin",
+    "phone": "+49301234567",
+    "email": "expo@techstartups.de",
+    "website": "https://techstartups.de",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "4",
+    "title": "Mobile Dev Workshop",
+    "description": "Hands-on workshop for mobile app developers.",
+    "date": "2026-01-20",
+    "location": "Madrid",
+    "phone": "+34912345678",
+    "email": "workshop@mobiledev.es",
+    "website": "https://mobiledev.es",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "5",
+    "title": "Blockchain Conference",
+    "description": "Conference on blockchain technology and crypto.",
+    "date": "2026-02-15",
+    "location": "Amsterdam",
+    "phone": "+31201234567",
+    "email": "contact@blockchainconf.nl",
+    "website": "https://blockchainconf.nl",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "6",
+    "title": "VR & AR Expo",
+    "description": "Experience the latest in virtual and augmented reality.",
+    "date": "2026-03-10",
+    "location": "Rome",
+    "phone": "+39061234567",
+    "email": "info@vrar-rome.it",
+    "website": "https://vrar-rome.it",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "7",
+    "title": "Cloud Computing Summit",
+    "description": "Learn about cloud solutions and best practices.",
+    "date": "2026-04-05",
+    "location": "Dublin",
+    "phone": "+35312345678",
+    "email": "contact@cloudsummit.ie",
+    "website": "https://cloudsummit.ie",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "8",
+    "title": "IoT Innovations Expo",
+    "description": "Discover the newest innovations in Internet of Things.",
+    "date": "2026-05-12",
+    "location": "Vienna",
+    "phone": "+4312345678",
+    "email": "info@iot-vienna.at",
+    "website": "https://iot-vienna.at",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "9",
+    "title": "Green Tech Forum",
+    "description": "Forum discussing sustainable technology solutions.",
+    "date": "2026-06-18",
+    "location": "Oslo",
+    "phone": "+4723456789",
+    "email": "contact@greentech.no",
+    "website": "https://greentech.no",
+    "logo": "event.jpeg"
+  },
+  {
+    "id": "10",
+    "title": "Digital Marketing Workshop",
+    "description": "Workshop for learning cutting-edge digital marketing techniques.",
+    "date": "2026-07-22",
+    "location": "Barcelona",
+    "phone": "+34987654321",
+    "email": "workshop@digitalmarketing.es",
+    "website": "https://digitalmarketing.es",
+    "logo": "event.jpeg"
   }
 ]
