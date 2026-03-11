@@ -16,7 +16,7 @@ class StorageService {
       final List decoded = json.decode(data);
       return decoded.map((e) => e.toString()).toList();
     } catch (e) {
-      print("Erreur lecture favorites.json: $e");
+      print("Error while reading in favorites.json: $e");
       return [];
     }
   }
@@ -27,7 +27,7 @@ class StorageService {
       final unique = favs.toSet().toList();
       await file.writeAsString(json.encode(unique));
     } catch (e) {
-      print("Erreur écriture favorites.json: $e");
+      print("Error while writing into favorites.json: $e");
     }
   }
 }
