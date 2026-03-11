@@ -29,6 +29,8 @@ class _EventCardState extends State<EventCard> {
 
     final favs = await StorageService.loadFavorites();
 
+    if (!mounted) return;
+
     setState(() {
       favorite = favs.contains(widget.event.id);
     });
@@ -36,19 +38,21 @@ class _EventCardState extends State<EventCard> {
 
   void toggleFavorite() async {
 
-    var favs = await StorageService.loadFavorites();
+    final favs = await StorageService.loadFavorites();
 
-    setState(() {
-      favorite = !favorite;
-    });
-
-    if (favorite) {
-      favs.add(widget.event.id);
-    } else {
+    if (favs.contains(widget.event.id)) {
       favs.remove(widget.event.id);
+    } else {
+      favs.add(widget.event.id);
     }
 
     await StorageService.saveFavorites(favs);
+
+    if (!mounted) return;
+
+    setState(() {
+      favorite = favs.contains(widget.event.id);
+    });
   }
 
   Future<void> open(String url) async {
@@ -99,6 +103,7 @@ class _EventCardState extends State<EventCard> {
                 IconButton(
                   icon: Icon(
                     favorite ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
                   ),
                   onPressed: toggleFavorite,
                 )
