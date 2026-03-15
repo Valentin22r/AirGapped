@@ -40,9 +40,7 @@ class _EventsScreenState extends State<EventsScreen> {
     final today = DateTime(now.year, now.month, now.day);
 
     List<Event> temp = events.where((e) {
-      final eDate = DateTime.tryParse(e.date);
-      if (eDate == null) return false;
-
+      final eDate = e.startDateTime;
       final eventDay = DateTime(eDate.year, eDate.month, eDate.day);
 
       // Search filter
@@ -61,10 +59,10 @@ class _EventsScreenState extends State<EventsScreen> {
       return true;
     }).toList();
 
-    // Sort events by date (ascending for upcoming, descending for past)
+    // Sort events by startDateTime
     temp.sort((a, b) {
-      final aDate = DateTime.tryParse(a.date) ?? DateTime(2100);
-      final bDate = DateTime.tryParse(b.date) ?? DateTime(2100);
+      final aDate = a.startDateTime;
+      final bDate = b.startDateTime;
 
       if (dateFilter == DateFilter.upcoming) return aDate.compareTo(bDate);
       if (dateFilter == DateFilter.past) return bDate.compareTo(aDate);

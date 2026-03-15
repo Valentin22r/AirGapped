@@ -7,6 +7,7 @@ import '../services/event_service.dart';
 class AddEditEventScreen extends StatefulWidget {
   final Event? event;
   const AddEditEventScreen({super.key, this.event});
+
   @override
   State<AddEditEventScreen> createState() => _AddEditEventScreenState();
 }
@@ -15,13 +16,18 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
   // Controllers for form fields
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  final dateController = TextEditingController();
   final locationController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final websiteController = TextEditingController();
 
-  DateTime? selectedDate;
+  // Controllers for start/end date fields
+  final startController = TextEditingController();
+  final endController = TextEditingController();
+
+  // Start and end date/time for the event
+  DateTime? startDateTime;
+  DateTime? endDateTime;
 
   // Regex patterns to validate email and phone
   final RegExp emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
@@ -35,40 +41,79 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
       final e = widget.event!;
       titleController.text = e.title;
       descriptionController.text = e.description;
-      dateController.text = e.date;
       locationController.text = e.location;
       phoneController.text = e.phone;
       emailController.text = e.email;
       websiteController.text = e.website;
-      selectedDate = DateTime.tryParse(e.date);
+      startDateTime = e.startDateTime;
+      endDateTime = e.endDateTime;
+      startController.text = formatDateTime(startDateTime);
+      endController.text = formatDateTime(endDateTime);
     }
   }
 
-  // Date picker
-  void pickDate() async {
-    final now = DateTime.now();
-
-    final picked = await showDatePicker(
+  // Date & time picker helper
+  Future<DateTime?> pickDateTime(DateTime? initialDate) async {
+    final date = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? now,
-      firstDate: now.subtract(const Duration(days: 365 * 20)),
-      lastDate: now.add(const Duration(days: 365 * 20)),
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 20)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
     );
+    if (date == null) return null;
 
+    final time = await showTimePicker(
+      context: context,
+      initialTime: initialDate != null
+          ? TimeOfDay(hour: initialDate.hour, minute: initialDate.minute)
+          : const TimeOfDay(hour: 9, minute: 0),
+    );
+    if (time == null) return null;
+
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
+  // Pick start date & time
+  void pickStartDateTime() async {
+    final picked = await pickDateTime(startDateTime);
     if (picked != null) {
       setState(() {
-        selectedDate = picked;
-        dateController.text =
-            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+        startDateTime = picked;
+        startController.text = formatDateTime(startDateTime);
+
+        // If end date is null or before start, initialize end = start + 1h
+        if (endDateTime == null || endDateTime!.isBefore(startDateTime!)) {
+          endDateTime = startDateTime!.add(const Duration(hours: 1));
+          endController.text = formatDateTime(endDateTime);
+        }
       });
     }
   }
 
-  // Check and save field
+  // Pick end date & time
+  void pickEndDateTime() async {
+    final picked = await pickDateTime(endDateTime);
+    if (picked != null) {
+      setState(() {
+        // Ensure end is always after start
+        if (startDateTime != null && picked.isBefore(startDateTime!)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("End date/time cannot be before start date/time")),
+          );
+          return;
+        }
+        endDateTime = picked;
+        endController.text = formatDateTime(endDateTime);
+      });
+    }
+  }
+
+  // Check and save event
   void saveEvent() async {
-    if (titleController.text.isEmpty || dateController.text.isEmpty) {
+    // Validate required fields
+    if (titleController.text.isEmpty || startDateTime == null || endDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill at least title and date")),
+        const SnackBar(content: Text("Please fill title, start and end date/time")),
       );
       return;
     }
@@ -94,13 +139,14 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
       id: widget.event?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       title: titleController.text,
       description: descriptionController.text,
-      date: dateController.text,
       location: locationController.text,
       phone: phoneController.text,
       email: emailController.text,
       website: websiteController.text,
       logo: "event.jpeg", // default logo
       favory: widget.event?.favory ?? false, // keep favorite state
+      startDateTime: startDateTime!,
+      endDateTime: endDateTime!,
     );
 
     // Add or update event
@@ -110,10 +156,16 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
       await EventService.updateEvent(newEvent);
     }
 
-    if (!mounted)
-      return;
+    if (!mounted) return;
 
     Navigator.pop(context, true);
+  }
+
+  // Helper to format DateTime for display
+  String formatDateTime(DateTime? dt) {
+    if (dt == null) return '';
+    return "${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} "
+           "${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
   }
 
   @override
@@ -128,15 +180,29 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
             // Form fields
             TextField(controller: titleController, decoration: const InputDecoration(labelText: "Title")),
             TextField(controller: descriptionController, decoration: const InputDecoration(labelText: "Description")),
+
+            // Start Date & Time
             TextField(
-              controller: dateController,
+              controller: startController,
+              readOnly: true,
+              onTap: pickStartDateTime,
               decoration: const InputDecoration(
-                labelText: "Date",
+                labelText: "Start Date & Time",
                 prefixIcon: Icon(Icons.calendar_today),
               ),
-              readOnly: true,
-              onTap: pickDate,
             ),
+
+            // End Date & Time
+            TextField(
+              controller: endController,
+              readOnly: true,
+              onTap: pickEndDateTime,
+              decoration: const InputDecoration(
+                labelText: "End Date & Time",
+                prefixIcon: Icon(Icons.calendar_today),
+              ),
+            ),
+
             TextField(controller: locationController, decoration: const InputDecoration(labelText: "Location")),
             TextField(
               controller: phoneController,
@@ -150,6 +216,7 @@ class _AddEditEventScreenState extends State<AddEditEventScreen> {
             ),
             TextField(controller: websiteController, decoration: const InputDecoration(labelText: "Website")),
             const SizedBox(height: 20),
+
             // Button Save Event
             ElevatedButton(
               onPressed: saveEvent,

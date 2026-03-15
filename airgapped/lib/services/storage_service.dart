@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
+import '../models/event.dart';
 
 // Service to handle local storage for events and favorites
 class StorageService {
@@ -23,11 +24,14 @@ class StorageService {
   }
 
   // Load all events from local file
-  static Future<List<dynamic>> loadEvents() async {
+  static Future<List<Event>> loadEvents() async {
     try {
       final file = await _getEventsFile();
       final data = await file.readAsString();
-      return json.decode(data); // return decoded JSON as List
+      final List decoded = json.decode(data);
+
+      // Convert each JSON object to Event
+      return decoded.map((e) => Event.fromJson(e)).toList();
     } catch (e) {
       print("Error loading events: $e");
       return [];
@@ -35,11 +39,13 @@ class StorageService {
   }
 
   // Save all events to local file
-  static Future<void> saveEvents(List<dynamic> events) async {
+  static Future<void> saveEvents(List<Event> events) async {
     try {
       final file = await _getEventsFile();
+      // Convert each Event to JSON map before saving
+      final jsonList = events.map((e) => e.toJson()).toList();
       await file.writeAsString(
-        json.encode(events),
+        json.encode(jsonList),
         mode: FileMode.write,
         flush: true,
       );
@@ -49,14 +55,14 @@ class StorageService {
   }
 
   // Add a new event
-  static Future<void> addEvent(Map<String, dynamic> event) async {
+  static Future<void> addEvent(Event event) async {
     final events = await loadEvents();
     events.add(event);
     await saveEvents(events);
   }
 
   // Update an existing event by index
-  static Future<void> updateEvent(int index, Map<String, dynamic> updatedEvent) async {
+  static Future<void> updateEvent(int index, Event updatedEvent) async {
     final events = await loadEvents();
     if (index >= 0 && index < events.length) {
       events[index] = updatedEvent;

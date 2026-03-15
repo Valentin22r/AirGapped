@@ -64,6 +64,16 @@ class _EventCardState extends State<EventCard> {
     }
   }
 
+  // Helper to format start and end date/time
+  String formatEventDateTime(Event e) {
+    final start = e.startDateTime;
+    final end = e.endDateTime;
+    return "${start.year}-${start.month.toString().padLeft(2, '0')}-${start.day.toString().padLeft(2, '0')} "
+           "${start.hour.toString().padLeft(2, '0')}:${start.minute.toString().padLeft(2, '0')} → "
+           "${end.year}-${end.month.toString().padLeft(2, '0')}-${end.day.toString().padLeft(2, '0')} "
+           "${end.hour.toString().padLeft(2, '0')}:${end.minute.toString().padLeft(2, '0')}";
+  }
+
   @override
   Widget build(BuildContext context) {
     final event = widget.event;
@@ -97,7 +107,9 @@ class _EventCardState extends State<EventCard> {
             const SizedBox(height: 10),
             Text(event.description),
             const SizedBox(height: 10),
-            Text("Date: ${event.date}"),
+
+            // Show start → end date/time
+            Text("Date: ${formatEventDateTime(event)}"),
             Text("Location: ${event.location}"),
             const SizedBox(height: 10),
 
