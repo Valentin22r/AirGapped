@@ -15,20 +15,18 @@ class MainActivity: FlutterActivity() {
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
             .setMethodCallHandler { call, result ->
-
-                if (call.method == "open") {
-
-                    val url = call.argument<String>("url")
-
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(url)
-
-                    startActivity(intent)
-
-                    result.success(null)
-
+                val url = call.argument<String>("url")
+                if (url != null) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.data = Uri.parse(url)
+                        startActivity(intent)
+                        result.success(null)
+                    } catch (e: Exception) {
+                        result.error("UNAVAILABLE", "Cannot open $url", null)
+                    }
                 } else {
-                    result.notImplemented()
+                    result.error("INVALID", "URL was null", null)
                 }
             }
     }

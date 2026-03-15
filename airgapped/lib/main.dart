@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/events_screen.dart';
 import 'screens/favorites_screen.dart';
-import 'screens/settings_screen.dart';
 
 void main() {
   runApp(const AirGappedApp());
@@ -35,7 +34,6 @@ class _HomePageState extends State<HomePage> {
   final pages = const [
     EventsScreen(),
     FavoritesScreen(),
-    SettingsScreen()
   ];
 
   @override
@@ -62,10 +60,6 @@ class _HomePageState extends State<HomePage> {
             label: "Favorites",
           ),
 
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
         ],
       ),
     );
